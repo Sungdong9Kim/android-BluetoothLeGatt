@@ -38,6 +38,10 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import android.Manifest;
+import android.os.Build;
+import android.util.Log;
+
 /**
  * Activity for scanning and displaying available Bluetooth LE devices.
  */
@@ -56,6 +60,13 @@ public class DeviceScanActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         getActionBar().setTitle(R.string.title_devices);
         mHandler = new Handler();
+
+        //alex https://stackoverflow.com/questions/37423199/bluetooth-le-gatt-not-finding-any-devices/37423244#37423244
+        Log.d(TAG, "Request Location Permissions:");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_CODE);
+        }
 
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
@@ -92,6 +103,27 @@ public class DeviceScanActivity extends ListActivity {
                     R.layout.actionbar_indeterminate_progress);
         }
         return true;
+    }
+
+    //alex
+    private static int PERMISSION_REQUEST_CODE = 1;
+    private final static String TAG = DeviceScanActivity.class.getSimpleName();
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
+    {
+        if(requestCode == PERMISSION_REQUEST_CODE)
+        {
+            //Do something based on grantResults
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                Log.d(TAG, "coarse location permission granted");
+            }
+            else
+            {
+                Log.d(TAG, "coarse location permission denied");
+            }
+        }
     }
 
     @Override
